@@ -1,0 +1,18 @@
+body {
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+h1 {
+	font-size: 64px;
+	color: #8e5dff;
+	transition: color 600ms;
+}
+
+a {
+	display: block;
+	padding-bottom: 10px;
+}
