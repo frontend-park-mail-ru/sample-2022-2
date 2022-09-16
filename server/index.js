@@ -110,9 +110,11 @@ app.get('/feed', (req, res) => {
 	const result = Object
 		.values(users)
 		.filter(({email}) => email !== emailSession)
+		.map(user => user.images)
+		.filter(Boolean)
 	;
 
-	res.json(result);
+	res.json(result.flat());
 });
 
 const port = process.env.PORT || 3000;
