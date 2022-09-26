@@ -1,5 +1,9 @@
+import Menu, {RENDER_TYPE} from './components/Menu/Menu.js';
+import {safe} from './utils/safe.js';
+
 const root = document.getElementById('root');
 const menuElement = document.createElement('aside');
+menuElement.classList.add('menu');
 const mainContentElement = document.createElement('main');
 root.appendChild(menuElement);
 root.appendChild(mainContentElement);
@@ -23,7 +27,7 @@ const config = {
 		},
 		profile: {
 			href: '/profile',
-			name: 'Профиль',
+			name: safe('Профиль'),
 			render: renderProfile,
 		},
 	},
@@ -38,35 +42,12 @@ function createInput(type, text, name) {
 	return input;
 }
 
-function ajax(method, url, body = null, callback) {
-	const xhr = new XMLHttpRequest();
-	xhr.open(method, url, true);
-	xhr.withCredentials = true;
-
-	xhr.addEventListener('readystatechange', function () {
-		if (xhr.readyState !== XMLHttpRequest.DONE) return;
-
-		callback(xhr.status, xhr.responseText);
-	});
-
-	if (body) {
-		xhr.setRequestHeader('Content-type', 'application/json; charset=utf8');
-		xhr.send(JSON.stringify(body));
-		return;
-	}
-
-	xhr.send();
-}
-
-
 function renderMain() {
 	const mainElement = document.createElement('div');
 
-	ajax(
-		'GET',
-		'/feed',
-		null,
-		(status, responseString) => {
+	ajax.get({
+		url: '/feed',
+		callback: (status, responseString) => {
 			let isAuthorized = false;
 
 			if (status === 200) {
@@ -90,7 +71,7 @@ function renderMain() {
 				})
 			}
 		}
-	);
+	})
 
 	return mainElement;
 }
@@ -115,11 +96,10 @@ function renderLogin() {
 		const email = emailInput.value.trim();
 		const password = passwordInput.value;
 
-		ajax(
-			'POST',
-			'/login',
-			{email, password},
-			(status => {
+		ajax.post({
+			url: '/login',
+			body: {email, password},
+			callback: (status => {
 				if (status === 200) {
 					goToPage(config.menu.profile);
 					return;
@@ -127,7 +107,7 @@ function renderLogin() {
 
 				alert('АХТУНГ! НЕВЕРНЫЙ ЕМЕЙЛ ИЛИ ПАРОЛЬ');
 			})
-		)
+		});
 	});
 
 	return form;
@@ -163,11 +143,9 @@ function goToPage(menuElement) {
 function renderProfile() {
 	const profileElement = document.createElement('div');
 
-	ajax(
-		'GET',
-		'/me',
-		null,
-		(status, responseString) => {
+	ajax.get({
+		url: '/me',
+		callback: (status, responseString) => {
 			let isAuthorized = false;
 
 			if (status === 200) {
@@ -196,30 +174,15 @@ function renderProfile() {
 				})
 			}
 		}
-	);
+	})
 
 	return profileElement;
 }
 
 function renderMenu() {
-	Object
-		.entries(config.menu)
-		.map(([key, {href, name}], index) => {
-			const menuElement = document.createElement('a');
-			menuElement.href = href;
-			menuElement.textContent = name;
-			menuElement.dataset.section = key;
-
-			if (index === 0) {
-				menuElement.classList.add('active');
-			}
-
-			return menuElement;
-		})
-		.forEach((a) => {
-			menuElement.appendChild(a);
-		})
-	;
+	const menu = new Menu(menuElement);
+	menu.items = config.menu;
+	menu.render(RENDER_TYPE.TEMPLATE);
 }
 
 root.addEventListener('click', (e) => {

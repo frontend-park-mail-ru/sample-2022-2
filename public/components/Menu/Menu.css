@@ -1,0 +1,7 @@
+.menu__item {
+    color: #514770;
+}
+
+.menu__item:hover {
+    background-color: #e2d8fa;
+}
