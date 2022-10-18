@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prestart": "npm run tmpl",
     "start": "PORT=3002 DEBUG=server node server",
     "tmpl": "./node_modules/.bin/fest-build --dir=public"
   },

@@ -1,6 +1,16 @@
 import Menu, {RENDER_TYPE} from './components/Menu/Menu.js';
 import {safe} from './utils/safe.js';
 
+if ('serviceWorker' in navigator) {
+	navigator.serviceWorker.register('sw.js')
+		.then((reg) => {
+			console.log('sw registered', reg);
+		})
+		.catch((e) => {
+			console.error(e);
+		});
+}
+
 const root = document.getElementById('root');
 const menuElement = document.createElement('aside');
 menuElement.classList.add('menu');
